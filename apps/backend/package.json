@@ -1,0 +1,58 @@
+{
+  "name": "@wereready/core",
+  "version": "0.0.0",
+  "type": "module",
+  "main": "dist/server.js",
+  "scripts": {
+    "start": "tsx src/server.ts",
+    "dev": "tsx watch src/server.ts",
+    "test": "vitest",
+    "test:watch": "vitest --watch",
+    "build": "tsc",
+    "build:clean": "rm -rf dist && tsc",
+    "start:temp": "node dist/server.js",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "lint": "eslint . --ext .ts",
+    "lint:fix": "eslint . --ext .ts --fix",
+    "type-check": "tsc --noEmit"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@types/node": "^24.2.0",
+    "@typescript-eslint/eslint-plugin": "^8.39.0",
+    "@typescript-eslint/parser": "^8.39.0",
+    "@vitest/ui": "^3.2.4",
+    "eslint": "^9.32.0",
+    "eslint-config-prettier": "^10.1.8",
+    "prettier": "^3.6.2",
+    "prisma": "^6.14.0",
+    "ts-node-dev": "^2.0.0",
+    "tsx": "^4.20.3",
+    "typescript": "^5.9.2",
+    "vitest": "^3.2.4"
+  },
+  "lint-staged": {
+    "**/*.{ts,js,json,md}": [
+      "prettier --write",
+      "eslint --fix"
+    ]
+  },
+  "dependencies": {
+    "@wereready/database": "*",
+    "@wereready/shared-types": "*",
+    "@fastify/cors": "^11.1.0",
+    "dotenv": "^17.2.1",
+    "fastify": "^5.4.0",
+    "fastify-plugin": "^5.0.1",
+    "puppeteer": "^24.23.0",
+    "puppeteer-core": "^24.23.0",
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2",
+    "uuid": "^11.1.0",
+    "zod": "^4.0.15"
+  }
+}
