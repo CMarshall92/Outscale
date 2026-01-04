@@ -42,16 +42,11 @@
     ]
   },
   "dependencies": {
-    "@wereready/database": "*",
-    "@wereready/shared-types": "*",
+    "@outscale/shared-types": "workspace:*",
     "@fastify/cors": "^11.1.0",
     "dotenv": "^17.2.1",
     "fastify": "^5.4.0",
     "fastify-plugin": "^5.0.1",
-    "puppeteer": "^24.23.0",
-    "puppeteer-core": "^24.23.0",
-    "puppeteer-extra": "^3.3.6",
-    "puppeteer-extra-plugin-stealth": "^2.11.2",
     "uuid": "^11.1.0",
     "zod": "^4.0.15"
   }
