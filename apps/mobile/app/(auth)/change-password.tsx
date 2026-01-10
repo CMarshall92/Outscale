@@ -1,9 +1,3 @@
-/**
- * @fileoverview Change password screen for authenticated users
- * @author Your Name
- * @version 1.0.0
- */
-
 import React, { useState } from "react";
 import {
   View,
@@ -17,11 +11,6 @@ import {
 import { useUser } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
 
-/**
- * Change password screen component for authenticated users
- * Allows users to update their password with current password verification
- * @returns {JSX.Element} The change password form UI
- */
 export default function ChangePasswordScreen() {
   const { user } = useUser();
   const router = useRouter();
@@ -32,15 +21,9 @@ export default function ChangePasswordScreen() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  /**
-   * Handles the password change process with validation and error handling
-   * Updates the user's password after verifying the current password
-   * @returns {Promise<void>}
-   */
   const onChangePasswordPress = async () => {
     if (!user) return;
 
-    // Validate inputs
     if (!currentPassword.trim()) {
       setError("Please enter your current password");
       return;
@@ -70,24 +53,20 @@ export default function ChangePasswordScreen() {
     setIsLoading(true);
 
     try {
-      // Update password using Clerk's user.updatePassword method
       await user.updatePassword({
         currentPassword,
         newPassword,
       });
 
-      // Clear form and navigate back
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
       setError("");
 
-      // Navigate back to profile after successful password change
       router.back();
     } catch (err: any) {
       console.error(JSON.stringify(err, null, 2));
 
-      // Handle specific Clerk errors
       if (err.errors && err.errors.length > 0) {
         const errorMessage = err.errors[0].longMessage || err.errors[0].message;
         setError(errorMessage);
@@ -150,8 +129,7 @@ export default function ChangePasswordScreen() {
         Password must be at least 8 characters long
       </Text>
 
-      <Button
-        title={isLoading ? "Updating..." : "Update Password"}
+      <Pressable
         onPress={onChangePasswordPress}
         disabled={
           isLoading ||
@@ -160,7 +138,9 @@ export default function ChangePasswordScreen() {
           !confirmPassword.trim()
         }
         style={styles.button}
-      />
+      >
+        <Text>{isLoading ? "Updating..." : "Update Password"}</Text>
+      </Pressable>
 
       <Pressable
         onPress={() => router.back()}

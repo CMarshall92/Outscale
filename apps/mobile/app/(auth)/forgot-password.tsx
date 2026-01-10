@@ -1,9 +1,3 @@
-/**
- * @fileoverview Forgot password screen with email input and reset functionality
- * @author Your Name
- * @version 1.0.0
- */
-
 import React, { useState } from "react";
 import {
   View,
@@ -16,11 +10,6 @@ import {
 import { useSignIn } from "@clerk/clerk-expo";
 import { Link, useRouter } from "expo-router";
 
-/**
- * Forgot password screen component with email input and reset functionality
- * Allows users to request password reset via email
- * @returns {JSX.Element} The forgot password form UI
- */
 export default function ForgotPasswordScreen() {
   const { signIn, isLoaded } = useSignIn();
   const router = useRouter();
@@ -30,11 +19,6 @@ export default function ForgotPasswordScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [isEmailSent, setIsEmailSent] = useState(false);
 
-  /**
-   * Handles the password reset request with error handling and loading states
-   * Sends password reset email to the provided email address
-   * @returns {Promise<void>}
-   */
   const onResetPasswordPress = async () => {
     if (!isLoaded) return;
 
@@ -42,18 +26,15 @@ export default function ForgotPasswordScreen() {
     setIsLoading(true);
 
     try {
-      // Initiate password reset
       await signIn.create({
         strategy: "reset_password_email_code",
         identifier: emailAddress,
       });
 
-      // Show success message
       setIsEmailSent(true);
     } catch (err: any) {
       console.error(JSON.stringify(err, null, 2));
 
-      // Handle specific Clerk errors
       if (err.errors && err.errors.length > 0) {
         const errorMessage = err.errors[0].longMessage || err.errors[0].message;
         setError(errorMessage);
@@ -69,12 +50,8 @@ export default function ForgotPasswordScreen() {
     }
   };
 
-  /**
-   * Handles the back to sign-in navigation
-   * @returns {void}
-   */
   const onBackToSignIn = () => {
-    router.replace("/sign-in");
+    router.replace("/(auth)/sign-in");
   };
 
   if (isEmailSent) {
@@ -89,11 +66,9 @@ export default function ForgotPasswordScreen() {
           password.
         </Text>
 
-        <Button
-          title="Back to Sign In"
-          onPress={onBackToSignIn}
-          style={styles.button}
-        />
+        <Pressable onPress={onBackToSignIn} style={styles.button}>
+          <Text>Back to Sign In</Text>
+        </Pressable>
       </View>
     );
   }
@@ -123,14 +98,15 @@ export default function ForgotPasswordScreen() {
         autoComplete="email"
       />
 
-      <Button
-        title={isLoading ? "Sending..." : "Send Reset Link"}
+      <Pressable
         onPress={onResetPasswordPress}
         disabled={isLoading || !emailAddress.trim()}
         style={styles.button}
-      />
+      >
+        <Text>{isLoading ? "Sending..." : "Send Reset Link"}</Text>
+      </Pressable>
 
-      <Link href="/sign-in" asChild>
+      <Link href="/(auth)/sign-in" asChild>
         <Pressable style={styles.link} disabled={isLoading}>
           <Text style={styles.linkText}>Back to Sign In</Text>
         </Pressable>

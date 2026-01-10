@@ -1,34 +1,37 @@
-/**
- * @fileoverview Home screen displaying user information and sign-out functionality
- * @author Your Name
- * @version 1.0.0
- */
-
-// app/(tabs)/index.tsx
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
-import { useUser } from "@clerk/clerk-expo";
-import SignOutButton from "../../components/SignOutButton";
+import { StyleSheet, View } from "react-native";
+import StatSection from "@/components/StatSection";
+import DashboardHeader from "@/components/DashboardHeader";
+import { Activity, Flame } from "lucide-react-native";
+import { StatCardProps } from "@/components/StatCard";
+import TeamSection from "@/components/TeamSection";
 
-/**
- * Home screen component that displays user information and provides sign-out functionality
- * Shows personalized greeting with user's name and email address
- * @returns {JSX.Element} The home screen UI with user information
- */
 export default function HomeScreen() {
-  const { user } = useUser();
+  const cardDataSample: StatCardProps[] = [
+    {
+      label: "Calories",
+      value: "847",
+      trend: "+12% vs yesterday",
+      icon: Flame,
+      iconColor: "#F97316",
+    },
+    {
+      label: "Steps",
+      value: "8.2k",
+      trend: "+8% vs yesterday",
+      icon: Activity,
+      iconColor: "#3B82F6",
+    },
+  ];
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Welcome!</Text>
-      <Text style={styles.userInfo}>
-        Hello, {user?.firstName || user?.fullName || "User"}!
-      </Text>
-      <Text style={styles.userEmail}>
-        {user?.primaryEmailAddress?.emailAddress}
-      </Text>
-      <View style={styles.separator} />
-      <SignOutButton />
+    <View style={{ flex: 1 }}>
+      <DashboardHeader />
+      <View style={styles.container}>
+        <StatSection cardData={cardDataSample} />
+        <StatSection cardData={cardDataSample} />
+        <TeamSection />
+      </View>
     </View>
   );
 }
@@ -36,29 +39,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 20,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 20,
-  },
-  userInfo: {
-    fontSize: 18,
-    marginBottom: 10,
-    fontWeight: "600",
-  },
-  userEmail: {
-    fontSize: 16,
-    marginBottom: 20,
-    color: "#666",
-  },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: "80%",
-    backgroundColor: "#eee",
+    paddingHorizontal: 20,
+    paddingVertical: 5,
   },
 });

@@ -1,20 +1,9 @@
-/**
- * @fileoverview Profile screen displaying detailed user information and account status
- * @author Your Name
- * @version 1.0.0
- */
-
 import React from "react";
 import { StyleSheet, Text, View, ScrollView, Pressable } from "react-native";
 import { useUser } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
 import SignOutButton from "../../components/SignOutButton";
 
-/**
- * Profile screen component that displays comprehensive user information
- * Shows personal details, account status, and provides sign-out functionality
- * @returns {JSX.Element} The profile screen UI with user details
- */
 export default function ProfileScreen() {
   const { user } = useUser();
   const router = useRouter();
@@ -102,7 +91,7 @@ export default function ProfileScreen() {
 
         <Pressable
           style={styles.actionButton}
-          onPress={() => router.push("/change-password")}
+          onPress={() => router.push("/(auth)/change-password")}
         >
           <Text style={styles.actionButtonText}>Change Password</Text>
         </Pressable>

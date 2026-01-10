@@ -1,10 +1,3 @@
-// app/sign-in.tsx
-/**
- * @fileoverview Custom sign-in screen with error handling and loading states
- * @author Your Name
- * @version 1.0.0
- */
-
 import React, { useState } from "react";
 import {
   View,
@@ -17,11 +10,6 @@ import {
 import { useSignIn } from "@clerk/clerk-expo";
 import { Link, useRouter } from "expo-router";
 
-/**
- * Sign-in screen component with custom UI and error handling
- * Provides email/password authentication with user-friendly error messages
- * @returns {JSX.Element} The sign-in form UI
- */
 export default function SignInScreen() {
   const { signIn, setActive, isLoaded } = useSignIn();
   const router = useRouter();
@@ -31,12 +19,6 @@ export default function SignInScreen() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  /**
-   * Handles the sign-in process with error handling and loading states
-   * Attempts to authenticate user with provided credentials
-   * Displays user-friendly error messages for failed attempts
-   * @returns {Promise<void>}
-   */
   const onSignInPress = async () => {
     if (!isLoaded) return;
 
@@ -49,21 +31,16 @@ export default function SignInScreen() {
         password,
       });
 
-      // If sign-in process is complete, set the created session as active
-      // and redirect the user
       if (signInAttempt.status === "complete") {
         await setActive({ session: signInAttempt.createdSessionId });
         router.replace("/(tabs)");
       } else {
-        // If the status isn't complete, check why. User might need to
-        // complete further steps.
         setError("Sign-in incomplete. Please try again.");
         console.error(JSON.stringify(signInAttempt, null, 2));
       }
     } catch (err: any) {
       console.error(JSON.stringify(err, null, 2));
 
-      // Handle specific Clerk errors
       if (err.errors && err.errors.length > 0) {
         const errorMessage = err.errors[0].longMessage || err.errors[0].message;
         setError(errorMessage);
@@ -108,13 +85,13 @@ export default function SignInScreen() {
         onPress={onSignInPress}
         disabled={isLoading}
       />
-      <Link href="/forgot-password" asChild>
+      <Link href="/(auth)/forgot-password" asChild>
         <Pressable style={styles.link} disabled={isLoading}>
           <Text style={styles.linkText}>Forgot Password?</Text>
         </Pressable>
       </Link>
 
-      <Link href="/sign-up" asChild>
+      <Link href="/(auth)/sign-up" asChild>
         <Pressable style={styles.link} disabled={isLoading}>
           <Text style={styles.linkText}>Don't have an account? Sign Up</Text>
         </Pressable>

@@ -1,10 +1,3 @@
-// app/sign-up.tsx
-/**
- * @fileoverview Custom sign-up screen with email verification and error handling
- * @author Your Name
- * @version 1.0.0
- */
-
 import React, { useState } from "react";
 import {
   View,
@@ -17,11 +10,6 @@ import {
 import { useSignUp } from "@clerk/clerk-expo";
 import { Link, useRouter } from "expo-router";
 
-/**
- * Sign-up screen component with custom UI, email verification, and error handling
- * Provides user registration with first/last name fields and email verification flow
- * @returns {JSX.Element} The sign-up form UI with verification step
- */
 export default function SignUpScreen() {
   const { isLoaded, signUp, setActive } = useSignUp();
   const router = useRouter();
@@ -42,7 +30,6 @@ export default function SignUpScreen() {
     setIsLoading(true);
 
     try {
-      // Create the user on Clerk with first and last name
       await signUp.create({
         emailAddress,
         password,
@@ -50,15 +37,12 @@ export default function SignUpScreen() {
         lastName,
       });
 
-      // Send verification email
       await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
 
-      // Move to the verification screen
       setPendingVerification(true);
     } catch (err: any) {
       console.error(JSON.stringify(err, null, 2));
 
-      // Handle specific Clerk errors
       if (err.errors && err.errors.length > 0) {
         const errorMessage = err.errors[0].longMessage || err.errors[0].message;
         setError(errorMessage);
@@ -79,26 +63,20 @@ export default function SignUpScreen() {
     setIsLoading(true);
 
     try {
-      // Use the code the user provided to attempt verification
       const signUpAttempt = await signUp.attemptEmailAddressVerification({
         code,
       });
 
-      // If verification was completed, set the session to active
-      // and redirect the user
       if (signUpAttempt.status === "complete") {
         await setActive({ session: signUpAttempt.createdSessionId });
         router.replace("/(tabs)");
       } else {
-        // If the status is not complete, check why. User may need to
-        // complete further steps.
         setError("Verification incomplete. Please try again.");
         console.error(JSON.stringify(signUpAttempt, null, 2));
       }
     } catch (err: any) {
       console.error(JSON.stringify(err, null, 2));
 
-      // Handle specific Clerk errors
       if (err.errors && err.errors.length > 0) {
         const errorMessage = err.errors[0].longMessage || err.errors[0].message;
         setError(errorMessage);
@@ -159,7 +137,7 @@ export default function SignUpScreen() {
             onPress={onSignUpPress}
             disabled={isLoading}
           />
-          <Link href="/sign-in" asChild>
+          <Link href="/(auth)/sign-in" asChild>
             <Pressable style={styles.link} disabled={isLoading}>
               <Text style={styles.linkText}>Have an account? Sign In</Text>
             </Pressable>
