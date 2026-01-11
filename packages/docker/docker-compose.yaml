@@ -1,0 +1,27 @@
+services:
+  # rabbitmq:
+  #   image: rabbitmq:3-management
+  #   ports:
+  #     - "5672:5672"
+  #     - "15672:15672"
+  #   networks:
+  #     - outscaleNetwork
+
+  db:
+    image: postgres:15
+    container_name: outscale_postgres_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: fasdfgfgjhsdrftgret5335brsbdfgeq43g3ew
+      POSTGRES_DB: outscale
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: always
+
+networks:
+  outscaleNetwork:
+
+volumes:
+  pgdata:
