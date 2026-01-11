@@ -12,17 +12,20 @@ const StatSection = ({ cardData }: StatRowProps) => {
       <Text style={styles.title}>Today's Activity</Text>
 
       <View style={styles.grid}>
-        {cardData.map(({ icon, label, value, trend, iconColor }) => (
-          <View style={styles.column}>
-            <StatCard
-              icon={icon}
-              label={label}
-              value={value}
-              trend={trend}
-              iconColor={iconColor}
-            />
-          </View>
-        ))}
+        {cardData.map(
+          ({ icon, label, value, trend, iconColor, slug }: StatCardProps) => (
+            <View key={`StatCard-${slug}`} style={styles.column}>
+              <StatCard
+                icon={icon}
+                label={label}
+                value={value}
+                trend={trend}
+                iconColor={iconColor}
+                slug={slug}
+              />
+            </View>
+          )
+        )}
       </View>
     </View>
   );

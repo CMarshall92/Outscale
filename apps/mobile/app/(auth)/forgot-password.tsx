@@ -51,7 +51,7 @@ export default function ForgotPasswordScreen() {
   };
 
   const onBackToSignIn = () => {
-    router.replace("/(auth)/sign-in");
+    router.replace("/(auth)/signin");
   };
 
   if (isEmailSent) {
@@ -106,7 +106,7 @@ export default function ForgotPasswordScreen() {
         <Text>{isLoading ? "Sending..." : "Send Reset Link"}</Text>
       </Pressable>
 
-      <Link href="/(auth)/sign-in" asChild>
+      <Link href="/(auth)/signin" asChild>
         <Pressable style={styles.link} disabled={isLoading}>
           <Text style={styles.linkText}>Back to Sign In</Text>
         </Pressable>

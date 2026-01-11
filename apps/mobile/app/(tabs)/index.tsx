@@ -4,7 +4,7 @@ import StatSection from "@/components/StatSection";
 import DashboardHeader from "@/components/DashboardHeader";
 import { Activity, Flame } from "lucide-react-native";
 import { StatCardProps } from "@/components/StatCard";
-import TeamSection from "@/components/TeamSection";
+import CompetativeSection from "@/components/CompetativeSection";
 
 export default function HomeScreen() {
   const cardDataSample: StatCardProps[] = [
@@ -14,6 +14,7 @@ export default function HomeScreen() {
       trend: "+12% vs yesterday",
       icon: Flame,
       iconColor: "#F97316",
+      slug: "calories",
     },
     {
       label: "Steps",
@@ -21,6 +22,7 @@ export default function HomeScreen() {
       trend: "+8% vs yesterday",
       icon: Activity,
       iconColor: "#3B82F6",
+      slug: "steps",
     },
   ];
 
@@ -30,7 +32,7 @@ export default function HomeScreen() {
       <View style={styles.container}>
         <StatSection cardData={cardDataSample} />
         <StatSection cardData={cardDataSample} />
-        <TeamSection />
+        <CompetativeSection />
       </View>
     </View>
   );

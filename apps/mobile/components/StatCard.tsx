@@ -7,6 +7,7 @@ export interface StatCardProps {
   trend?: string;
   icon: React.ComponentType<any>;
   iconColor?: string;
+  slug?: string;
 }
 
 const StatCard = ({

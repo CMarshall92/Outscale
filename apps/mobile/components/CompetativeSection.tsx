@@ -3,17 +3,27 @@ import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import TeamView from "./TeamView";
 import NoTeamView from "./NoTeamView";
 
-const TeamSection = ({
-  handleNavigateToTeam,
-  handleCreateTeam,
-  handleJoinTeam,
-}: any) => {
+const CompetativeSection = () => {
   const [hasTeam, setHasTeam] = useState(false);
+
+  const handleCreateTeam = () => {
+    console.log("Create team clicked");
+    setHasTeam(true);
+  };
+
+  const handleJoinTeam = () => {
+    console.log("Join team clicked");
+    setHasTeam(true);
+  };
+
+  const handleNavigateToTeam = () => {
+    console.log("Navigate to team overview");
+  };
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Team</Text>
+        <Text style={styles.title}>Team Competition</Text>
 
         <TouchableOpacity
           onPress={() => setHasTeam(!hasTeam)}
@@ -56,4 +66,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default TeamSection;
+export default CompetativeSection;

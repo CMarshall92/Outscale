@@ -54,8 +54,8 @@ const InitialLayout = () => {
     }
     const inTabsGroup = segments[0] === "(tabs)";
     const inAuthScreens =
-      segments[0] === "sign-in" ||
-      segments[0] === "sign-up" ||
+      segments[0] === "signin" ||
+      segments[0] === "signup" ||
       segments[0] === "forgot-password";
     const inAccountScreens = segments[0] === "change-password";
 
@@ -73,7 +73,7 @@ const InitialLayout = () => {
     } else {
       // If signed out and in protected areas (tabs or account screens), go to sign-in
       if (inTabsGroup || inAccountScreens) {
-        router.replace("/(auth)/sign-in");
+        router.replace("/(auth)/signin");
       }
     }
   }, [isLoaded, isSignedIn, segments, router]);
@@ -88,22 +88,20 @@ const InitialLayout = () => {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="(tabs)" />
-        <Stack.Screen name="(auth)/sign-in" />
-        <Stack.Screen name="(auth)/sign-up" />
-        <Stack.Screen name="(auth)/forgot-password" />
-        <Stack.Screen
-          name="(auth)/change-password"
-          options={{
-            presentation: "modal",
-            title: "Change Password",
-            headerBackTitle: "Profile",
-          }}
-        />
-      </Stack>
-    </SafeAreaView>
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="(tabs)" />
+      <Stack.Screen name="(auth)/signin" />
+      <Stack.Screen name="(auth)/signup" />
+      <Stack.Screen name="(auth)/forgot-password" />
+      <Stack.Screen
+        name="(auth)/change-password"
+        options={{
+          presentation: "modal",
+          title: "Change Password",
+          headerBackTitle: "Profile",
+        }}
+      />
+    </Stack>
   );
 };
 
