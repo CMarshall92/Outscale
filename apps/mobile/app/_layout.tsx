@@ -93,14 +93,6 @@ const InitialLayout = () => {
       <Stack.Screen name="(auth)/signin" />
       <Stack.Screen name="(auth)/signup" />
       <Stack.Screen name="(auth)/forgot-password" />
-      <Stack.Screen
-        name="(auth)/change-password"
-        options={{
-          presentation: "modal",
-          title: "Change Password",
-          headerBackTitle: "Profile",
-        }}
-      />
     </Stack>
   );
 };

@@ -1,6 +1,6 @@
-import { useSignIn } from "@clerk/clerk-expo";
+import { useSignIn, useSSO } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -13,9 +13,24 @@ import {
   ScrollView,
 } from "react-native";
 import Svg, { Path } from "react-native-svg";
+import * as WebBrowser from "expo-web-browser";
+import * as AuthSession from "expo-auth-session";
+
+const useWarmUpBrowser = () => {
+  useEffect(() => {
+    WebBrowser.warmUpAsync();
+    return () => {
+      void WebBrowser.coolDownAsync();
+    };
+  }, []);
+};
+
+WebBrowser.maybeCompleteAuthSession();
 
 export default function LoginScreen() {
+  useWarmUpBrowser();
   const router = useRouter();
+  const { startSSOFlow } = useSSO();
   const { signIn, setActive, isLoaded } = useSignIn();
 
   const [email, setEmail] = useState("");
@@ -58,6 +73,32 @@ export default function LoginScreen() {
     }
   };
 
+  const onSSOPress = React.useCallback(
+    async (strategy: "oauth_google" | "oauth_apple" | "oauth_facebook") => {
+      try {
+        const { createdSessionId, setActive, signUp, signIn } =
+          await startSSOFlow({
+            strategy: strategy,
+            redirectUrl: AuthSession.makeRedirectUri({
+              scheme: "Outscale",
+              path: "oauth-native-callback",
+            }),
+          });
+
+        console.log("SSO Flow Result:", { createdSessionId });
+
+        if (createdSessionId) {
+          await setActive?.({ session: createdSessionId });
+        } else {
+          console.log("Additional steps required", signUp || signIn);
+        }
+      } catch (err) {
+        console.error("OAuth error", err);
+      }
+    },
+    [startSSOFlow]
+  );
+
   return (
     <View style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor="#1a1a1a" />
@@ -79,13 +120,10 @@ export default function LoginScreen() {
 
           <View style={styles.socialButtonsContainer}>
             <View style={styles.socialGrid}>
-              <TouchableOpacity style={styles.socialButton}>
-                <Svg width={20} height={20} viewBox="0 0 24 24" fill="white">
-                  <Path d="M16.365 1.43c0 1.14-.493 2.27-1.177 3.08-.744.9-1.99 1.57-2.987 1.57-.12 0-.23-.02-.3-.03-.01-.06-.04-.22-.04-.39 0-1.15.572-2.27 1.206-2.98.804-.94 2.142-1.64 3.248-1.68.03.13.05.28.05.43zm4.565 15.71c-.03.07-.463 1.58-1.518 3.12-.945 1.34-1.94 2.71-3.43 2.71-1.517 0-1.9-.88-3.63-.88-1.698 0-2.302.91-3.67.91-1.377 0-2.332-1.26-3.428-2.8-1.287-1.82-2.323-4.63-2.323-7.28 0-4.28 2.797-6.55 5.552-6.55 1.448 0 2.675.95 3.6.95.865 0 2.222-1.01 3.902-1.01.613 0 2.886.06 4.374 2.19-.13.09-2.383 1.37-2.383 4.19 0 3.26 2.854 4.42 2.957 4.45z" />
-                </Svg>
-              </TouchableOpacity>
-
-              <TouchableOpacity style={styles.socialButton}>
+              <TouchableOpacity
+                onPress={() => onSSOPress("oauth_google")}
+                style={styles.socialButton}
+              >
                 <Svg width={20} height={20} viewBox="0 0 24 24">
                   <Path
                     fill="currentColor"
@@ -109,6 +147,27 @@ export default function LoginScreen() {
                   />
                 </Svg>
               </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() => onSSOPress("oauth_facebook")}
+                style={styles.socialButton}
+              >
+                <Svg width={20} height={20} viewBox="0 0 24 24">
+                  <Path
+                    fill="white"
+                    d="M9.101 23.691v-7.98H6.627v-3.667h2.474v-1.58c0-4.085 1.848-5.978 5.858-5.978.401 0 .955.042 1.468.103a8.68 8.68 0 0 1 1.141.195v3.325a8.623 8.623 0 0 0-.653-.036c-2.648 0-2.928 1.67-2.928 3.403v1.518h3.962l-.547 3.713h-3.415v7.98h-4.887"
+                  />
+                </Svg>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() => onSSOPress("oauth_apple")}
+                style={styles.socialButton}
+              >
+                <Svg width={20} height={20} viewBox="0 0 24 24" fill="white">
+                  <Path d="M16.365 1.43c0 1.14-.493 2.27-1.177 3.08-.744.9-1.99 1.57-2.987 1.57-.12 0-.23-.02-.3-.03-.01-.06-.04-.22-.04-.39 0-1.15.572-2.27 1.206-2.98.804-.94 2.142-1.64 3.248-1.68.03.13.05.28.05.43zm4.565 15.71c-.03.07-.463 1.58-1.518 3.12-.945 1.34-1.94 2.71-3.43 2.71-1.517 0-1.9-.88-3.63-.88-1.698 0-2.302.91-3.67.91-1.377 0-2.332-1.26-3.428-2.8-1.287-1.82-2.323-4.63-2.323-7.28 0-4.28 2.797-6.55 5.552-6.55 1.448 0 2.675.95 3.6.95.865 0 2.222-1.01 3.902-1.01.613 0 2.886.06 4.374 2.19-.13.09-2.383 1.37-2.383 4.19 0 3.26 2.854 4.42 2.957 4.45z" />
+                </Svg>
+              </TouchableOpacity>
             </View>
 
             <Text style={styles.dividerText}>Or continue with</Text>
@@ -121,7 +180,7 @@ export default function LoginScreen() {
                     height={16}
                     viewBox="0 0 24 24"
                     fill="none"
-                    stroke="#6b7280"
+                    stroke="#fff"
                     strokeWidth="2"
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -133,7 +192,7 @@ export default function LoginScreen() {
                 <TextInput
                   style={styles.input}
                   placeholder="Email Address"
-                  placeholderTextColor="#6b7280"
+                  placeholderTextColor="#fff"
                   value={email}
                   onChangeText={setEmail}
                   keyboardType="email-address"
@@ -141,22 +200,39 @@ export default function LoginScreen() {
                 />
               </View>
 
-              <View>
+              <View style={styles.inputWrapper}>
+                <View style={styles.iconContainer}>
+                  <Svg
+                    width={16}
+                    height={16}
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#fff"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <Path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4" />
+                  </Svg>
+                </View>
                 <TextInput
-                  style={[styles.input, styles.passwordInput]}
+                  style={[styles.input]}
                   placeholder="Password"
-                  placeholderTextColor="#6b7280"
+                  placeholderTextColor="#fff"
                   value={password}
                   onChangeText={setPassword}
                   secureTextEntry
                 />
-                <View style={styles.forgotPasswordContainer}>
-                  <TouchableOpacity>
-                    <Text style={styles.forgotPasswordText}>
-                      Forgot password?
-                    </Text>
-                  </TouchableOpacity>
-                </View>
+              </View>
+
+              <View style={styles.forgotPasswordContainer}>
+                <TouchableOpacity
+                  onPress={() => router.replace("/(auth)/forgot-password")}
+                >
+                  <Text style={styles.forgotPasswordText}>
+                    Forgot password?
+                  </Text>
+                </TouchableOpacity>
               </View>
 
               <TouchableOpacity
@@ -164,7 +240,7 @@ export default function LoginScreen() {
                 onPress={onSignInPress}
                 activeOpacity={0.8}
               >
-                <Text style={styles.submitButtonText}>Continue</Text>
+                <Text style={styles.submitButtonText}>Login</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -236,7 +312,7 @@ const styles = StyleSheet.create({
   },
   dividerText: {
     textAlign: "center",
-    color: "#6b7280",
+    color: "#fff",
     fontSize: 14,
     marginBottom: 24,
   },
@@ -246,6 +322,9 @@ const styles = StyleSheet.create({
   inputWrapper: {
     position: "relative",
     justifyContent: "center",
+    borderColor: "#6b7280",
+    borderWidth: 1,
+    borderRadius: 12,
   },
   iconContainer: {
     position: "absolute",
@@ -269,10 +348,9 @@ const styles = StyleSheet.create({
   forgotPasswordContainer: {
     flexDirection: "row",
     justifyContent: "flex-end",
-    marginTop: 8,
   },
   forgotPasswordText: {
-    color: "#9ca3af",
+    color: "#fff",
     fontSize: 12,
   },
   submitButton: {
