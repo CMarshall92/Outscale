@@ -14,6 +14,7 @@ import OTPInput from "./OTPInput";
 import { Button } from "./Button";
 import { createTeam } from "@/networking/teams";
 import { useUser } from "@clerk/clerk-expo";
+import { useRouter } from "expo-router";
 
 const OPTION_SELECTED = {
   CREATE_TEAM: "create_team",
@@ -72,15 +73,23 @@ const CreateForm = ({
   setOption: Dispatch<SetStateAction<string>>;
 }) => {
   const Form = () => {
+    const router = useRouter();
     const [name, setName] = React.useState("");
     const [description, setDescription] = React.useState("");
     const [isLoading, setIsLoading] = React.useState(false);
 
     const handelCreateTeam = async () => {
       setIsLoading(true);
-      const code = await createTeam(user?.id, { name, description });
-      console.log("Created team with code:", code);
-      setIsLoading(false);
+
+      const newTeam = await createTeam(user?.id, { name, description });
+
+      setTimeout(() => {
+        setIsLoading(false);
+        router.replace({
+          pathname: "/team",
+          params: { team: JSON.stringify(newTeam || null) },
+        });
+      }, 2500);
     };
 
     return (
@@ -162,7 +171,7 @@ const JoinForm = ({
 };
 
 const NoTeamView = () => {
-  const { user, isLoaded } = useUser();
+  const { user } = useUser();
   const [option, setOption] = React.useState(OPTION_SELECTED.CREATE_TEAM);
 
   return (

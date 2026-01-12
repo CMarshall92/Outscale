@@ -157,14 +157,6 @@ export default function ProfileScreen() {
           <View style={[styles.card, styles.lastCard]}>
             <Text style={styles.cardTitle}>Actions</Text>
             <View style={styles.gap3}>
-              <TouchableOpacity
-                style={styles.btnPrimary}
-                onPress={() => router.push("/(auth)/change-password")}
-              >
-                <Lock size={16} color="#fff" style={styles.btnIcon} />
-                <Text style={styles.btnTextPrimary}>Change Password</Text>
-              </TouchableOpacity>
-
               <SignOutButton />
             </View>
           </View>

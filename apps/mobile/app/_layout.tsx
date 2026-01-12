@@ -53,26 +53,24 @@ const InitialLayout = () => {
       return;
     }
     const inTabsGroup = segments[0] === "(tabs)";
+    const inTeamRoute = segments[0] === "team";
     const inAuthScreens =
       segments[0] === "signin" ||
       segments[0] === "signup" ||
       segments[0] === "forgot-password";
-    const inAccountScreens = segments[0] === "change-password";
 
     if (isSignedIn) {
-      // If signed in and on auth screens, push to main app
       if (inAuthScreens) {
         router.replace("/(tabs)");
         return;
       }
 
-      // Allow tabs and account screens like change-password; otherwise go to tabs
-      if (!inTabsGroup && !inAccountScreens) {
+      if (!inTabsGroup && !inTeamRoute) {
         router.replace("/(tabs)");
+        return;
       }
     } else {
-      // If signed out and in protected areas (tabs or account screens), go to sign-in
-      if (inTabsGroup || inAccountScreens) {
+      if (inTabsGroup) {
         router.replace("/(auth)/signin");
       }
     }
@@ -93,6 +91,7 @@ const InitialLayout = () => {
       <Stack.Screen name="(auth)/signin" />
       <Stack.Screen name="(auth)/signup" />
       <Stack.Screen name="(auth)/forgot-password" />
+      <Stack.Screen name="team" />
     </Stack>
   );
 };
