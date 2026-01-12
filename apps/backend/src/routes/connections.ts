@@ -1,4 +1,5 @@
 import { type FastifyInstance } from 'fastify'
+import { prisma } from '@outscale/database';
 import { google } from 'googleapis';
 
 interface IConnectGoogle {
@@ -19,10 +20,28 @@ export async function connections(fastify: FastifyInstance) {
     try {
       const { tokens } = await oauth2Client.getToken(serverAuthCode);
       
-      // IMPORTANT: tokens.refresh_token is only sent the VERY FIRST time.
       if (tokens.refresh_token) {
-        // SAVE tokens.refresh_token to your database linked to the userId
-        // await db.user.update({ where: { id: userId }, data: { googleRefreshToken: tokens.refresh_token } });
+        await prisma.user.upsert({
+          where: { clerkId: userId },
+          update: {
+            connections: {
+              create: {
+                provider: 'oauth_google',
+                refreshToken: tokens.refresh_token,
+              },
+            },
+          },
+          create: {
+            clerkId: userId,
+            connections: {
+              create: {
+                provider: 'oauth_google',
+                refreshToken: tokens.refresh_token,
+              },
+            },
+          },
+        });
+
         console.log('Saved refresh token for user:', userId);
       }
 

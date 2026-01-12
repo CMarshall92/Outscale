@@ -15,6 +15,7 @@ import {
 } from "react-native";
 import Svg, { Path, Circle } from "react-native-svg";
 import OTPInput from "@/components/OTPInput";
+import { createDBUser } from "@/networking/users";
 
 export default function SignupForm() {
   const router = useRouter();
@@ -128,12 +129,21 @@ export default function SignupForm() {
       });
 
       if (signUpAttempt.status === "complete") {
-        await setActive({ session: signUpAttempt.createdSessionId });
-        router.replace("/(tabs)");
+        const user = await createDBUser(
+          signUpAttempt.createdUserId,
+          signUpAttempt.firstName,
+          signUpAttempt.lastName,
+          signUpAttempt.emailAddress
+        );
+
+        if (user) {
+          await setActive({ session: signUpAttempt.createdSessionId });
+          router.replace("/(tabs)");
+        }
       } else {
         setError((s) => ({
           ...s,
-          message: "Verification incomplete. Please try again.",
+          message: "Verification incomplete, try again.",
         }));
         console.error(JSON.stringify(signUpAttempt, null, 2));
       }

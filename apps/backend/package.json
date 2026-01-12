@@ -26,6 +26,7 @@
     "@types/node": "^24.2.0",
     "@typescript-eslint/eslint-plugin": "^8.39.0",
     "@typescript-eslint/parser": "^8.39.0",
+    "@outscale/database": "workspace:*",
     "@vitest/ui": "^3.2.4",
     "eslint": "^9.32.0",
     "eslint-config-prettier": "^10.1.8",
@@ -44,6 +45,7 @@
   },
   "dependencies": {
     "@fastify/cors": "^11.1.0",
+    "@outscale/database": "workspace:*",
     "@outscale/shared-types": "workspace:*",
     "dotenv": "^17.2.1",
     "fastify": "^5.4.0",
