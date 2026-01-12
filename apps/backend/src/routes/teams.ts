@@ -1,4 +1,8 @@
 import { type FastifyInstance } from 'fastify'
+import { generateOtpCode } from '../lib/numbers';
+import { prisma } from '@outscale/database';
+import { ErrorResponse } from '../lib/ErrorResponse';
+import { SuccessResponse } from '../lib/SuccessResponse';
 
 interface IQueryStringTeams {
   userId: string;
@@ -6,6 +10,8 @@ interface IQueryStringTeams {
 
 interface ICreateTeamBody {
   userId: string;
+  name: string;
+  description: string;
 }
 
 interface IJoinTeamBody {
@@ -32,21 +38,35 @@ export async function teams(fastify: FastifyInstance) {
   });
 
   fastify.post<{ Body: ICreateTeamBody }>('/create', async (request, reply) => {
-    const { userId } = request.body;
+    const { userId, name, description } = request.body;
     console.log(`POST_CREATE_TEAM: Creating team for userId: ${userId}`);
 
     if (!userId) {
       console.log(`POST_CREATE_TEAM: Missing userId in request`);
       return reply
         .code(400)
-        .send({ error: 'userId is required' });
+        .send(ErrorResponse({ message: 'userId is required' }));
     }
 
-    return { 
-      message: 'success', 
-      ok: true,
-      data: null,
-    };
+    const referenceCode = generateOtpCode(6);
+
+    const newTeam = await prisma.team.create({
+      data: {
+        name,
+        description,
+        referenceCode,
+        users: {
+          connect: {
+            clerkId: userId,
+          },
+        },
+      },
+    });
+
+    return SuccessResponse({ 
+      message: 'success',
+      data: newTeam
+    });
   });
 
   fastify.post<{ Body: IJoinTeamBody }>('/join', async (request, reply) => {

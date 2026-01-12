@@ -1,9 +1,170 @@
-import React from "react";
+import React, { Dispatch, SetStateAction } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import { Users, UserPlus } from "lucide-react-native";
+import {
+  Users,
+  UserPlus,
+  ChevronLeftCircleIcon,
+  Book,
+  Boxes,
+  Merge,
+} from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
+import { Input } from "./TextInput";
+import OTPInput from "./OTPInput";
+import { Button } from "./Button";
+import { createTeam } from "@/networking/teams";
+import { useUser } from "@clerk/clerk-expo";
 
-const NoTeamView = ({ onCreateTeam, onJoinTeam }: any) => {
+const OPTION_SELECTED = {
+  CREATE_TEAM: "create_team",
+  JOIN_TEAM: "join_team",
+  NONE: "none",
+};
+
+const NoTeamOptions = ({ setOption }: any) => {
+  const Options = () => (
+    <View style={styles.buttonContainer}>
+      <TouchableOpacity
+        style={styles.primaryButton}
+        onPress={() => setOption(OPTION_SELECTED.CREATE_TEAM)}
+        activeOpacity={0.8}
+      >
+        <Users size={18} color="#9333EA" style={styles.buttonIcon} />
+        <Text style={styles.primaryButtonText}>Create Team</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.outlineButton}
+        onPress={() => setOption(OPTION_SELECTED.JOIN_TEAM)}
+        activeOpacity={0.8}
+      >
+        <UserPlus size={18} color="white" style={styles.buttonIcon} />
+        <Text style={styles.outlineButtonText}>Join Team</Text>
+      </TouchableOpacity>
+    </View>
+  );
+
+  return (
+    <>
+      <View style={styles.header}>
+        <View style={styles.iconWrapper}>
+          <ChevronLeftCircleIcon size={24} color="white" />
+        </View>
+        <View>
+          <Text style={styles.title}>Join A Team</Text>
+          <Text style={styles.subtitle}>We need a few more details</Text>
+        </View>
+      </View>
+      <Text style={styles.description}>
+        Join or create a team to track progress of your friends, compete with
+        friends, and achieve your fitness goals together.
+      </Text>
+      <Options />
+    </>
+  );
+};
+
+const CreateForm = ({
+  user,
+  setOption,
+}: {
+  user: { id: string | undefined } | null | undefined;
+  setOption: Dispatch<SetStateAction<string>>;
+}) => {
+  const Form = () => {
+    const [name, setName] = React.useState("");
+    const [description, setDescription] = React.useState("");
+    const [isLoading, setIsLoading] = React.useState(false);
+
+    const handelCreateTeam = async () => {
+      setIsLoading(true);
+      const code = await createTeam(user?.id, { name, description });
+      console.log("Created team with code:", code);
+      setIsLoading(false);
+    };
+
+    return (
+      <View>
+        <Input
+          value={name}
+          set={setName}
+          placeholder="Name..."
+          icon={<Users size={16} color="#fff" />}
+        />
+        <Input
+          value={description}
+          set={setDescription}
+          placeholder="Description..."
+          icon={<Book size={16} color="#fff" />}
+        />
+        <Button
+          title={isLoading ? "Creating..." : "Create Team"}
+          onPress={handelCreateTeam}
+        />
+        <Button title="Back" onPress={() => setOption(OPTION_SELECTED.NONE)} />
+      </View>
+    );
+  };
+
+  return (
+    <>
+      <View style={styles.header}>
+        <View style={styles.iconWrapper}>
+          <Users size={24} color="white" />
+        </View>
+        <View>
+          <Text style={styles.title}>Create A Team</Text>
+          <Text style={styles.subtitle}>We need a few more details</Text>
+        </View>
+      </View>
+      <Text style={styles.description}>
+        Please fill in the details below to create your new fitness team and
+        start inviting members to joinr you on your fitness journey.
+      </Text>
+      <Form />
+    </>
+  );
+};
+
+const JoinForm = ({
+  user,
+  setOption,
+}: {
+  user: { id: string | undefined } | null | undefined;
+  setOption: Dispatch<SetStateAction<string>>;
+}) => {
+  const Form = () => (
+    <View>
+      <OTPInput length={6} code={""} setCode={() => {}} />
+      <Button title="Join Team" onSignUpPress={() => {}} />
+      <Button title="Back" onPress={() => setOption(OPTION_SELECTED.NONE)} />
+    </View>
+  );
+
+  return (
+    <>
+      <View style={styles.header}>
+        <View style={styles.iconWrapper}>
+          <Merge size={24} color="white" />
+        </View>
+        <View>
+          <Text style={styles.title}>Team Fitness Competition</Text>
+          <Text style={styles.subtitle}>Its better training together</Text>
+        </View>
+      </View>
+      <Text style={styles.description}>
+        Join or create a team to track progress of your friends, compete with
+        friends, and achieve your fitness goals together.
+      </Text>
+      <Form />
+    </>
+  );
+};
+
+const NoTeamView = () => {
+  const { user, isLoaded } = useUser();
+  const [option, setOption] = React.useState(OPTION_SELECTED.CREATE_TEAM);
+
   return (
     <View style={styles.outerContainer}>
       <LinearGradient
@@ -12,40 +173,15 @@ const NoTeamView = ({ onCreateTeam, onJoinTeam }: any) => {
         end={{ x: 1, y: 1 }}
         style={styles.card}
       >
-        <View style={styles.header}>
-          <View style={styles.iconWrapper}>
-            <Users size={24} color="white" />
-          </View>
-          <View>
-            <Text style={styles.title}>Team Fitness</Text>
-            <Text style={styles.subtitle}>Better together</Text>
-          </View>
-        </View>
-
-        <Text style={styles.description}>
-          Join or create a team to track progress, compete with friends, and
-          achieve your fitness goals together.
-        </Text>
-
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            style={styles.primaryButton}
-            onPress={onCreateTeam}
-            activeOpacity={0.8}
-          >
-            <Users size={18} color="#9333EA" style={styles.buttonIcon} />
-            <Text style={styles.primaryButtonText}>Create Team</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.outlineButton}
-            onPress={onJoinTeam}
-            activeOpacity={0.8}
-          >
-            <UserPlus size={18} color="white" style={styles.buttonIcon} />
-            <Text style={styles.outlineButtonText}>Join Team</Text>
-          </TouchableOpacity>
-        </View>
+        {option === OPTION_SELECTED.NONE ? (
+          <NoTeamOptions setOption={setOption} />
+        ) : null}
+        {option === OPTION_SELECTED.CREATE_TEAM ? (
+          <CreateForm setOption={setOption} user={user} />
+        ) : null}
+        {option === OPTION_SELECTED.JOIN_TEAM ? (
+          <JoinForm setOption={setOption} user={user} />
+        ) : null}
       </LinearGradient>
     </View>
   );
@@ -83,7 +219,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "rgba(255, 255, 255, 0.9)",
     lineHeight: 20,
-    marginBottom: 24,
+    marginBottom: 5,
   },
   buttonContainer: {
     gap: 12,

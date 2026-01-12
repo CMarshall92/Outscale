@@ -3,7 +3,7 @@ import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
 import { Users, Trophy, TrendingUp, ChevronRight } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
 
-const TeamView = ({ onNavigateToTeam }: any) => {
+const TeamView = () => {
   const teamData = {
     name: "Fitness Warriors",
     members: 12,
@@ -13,9 +13,13 @@ const TeamView = ({ onNavigateToTeam }: any) => {
       "https://images.unsplash.com/photo-1763740360969-908ca8c00629?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxmaXRuZXNzJTIwdGVhbSUyMHdvcmtvdXR8ZW58MXx8fHwxNzY4MDc4MzE0fDA&ixlib=rb-4.1.0&q=80&w=400",
   };
 
+  const handleNavigateToTeam = () => {
+    console.log("Navigate to team overview");
+  };
+
   return (
     <TouchableOpacity
-      onPress={onNavigateToTeam}
+      onPress={handleNavigateToTeam}
       activeOpacity={0.9}
       style={styles.container}
     >

@@ -7,6 +7,7 @@ import { StatCardProps } from "@/components/StatCard";
 import CompetativeSection from "@/components/CompetativeSection";
 
 export default function HomeScreen() {
+  const hasGoogleConnection = null;
   const cardDataSample: StatCardProps[] = [
     {
       label: "Calories",
@@ -30,8 +31,12 @@ export default function HomeScreen() {
     <View style={{ flex: 1 }}>
       <DashboardHeader />
       <ScrollView style={styles.container}>
-        <StatSection cardData={cardDataSample} />
-        <StatSection cardData={cardDataSample} />
+        {hasGoogleConnection ? (
+          <>
+            <StatSection cardData={cardDataSample} />
+            <StatSection cardData={cardDataSample} />
+          </>
+        ) : null}
         <CompetativeSection />
       </ScrollView>
     </View>
