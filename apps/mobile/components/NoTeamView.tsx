@@ -86,7 +86,7 @@ const CreateForm = ({
       setTimeout(() => {
         setIsLoading(false);
         router.replace({
-          pathname: "/team",
+          pathname: "/(tabs)/team",
           params: { team: JSON.stringify(newTeam || null) },
         });
       }, 2500);

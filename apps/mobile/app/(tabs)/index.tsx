@@ -1,10 +1,8 @@
 import React from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 import StatSection from "@/components/StatSection";
-import DashboardHeader from "@/components/DashboardHeader";
 import { Activity, Flame } from "lucide-react-native";
 import { StatCardProps } from "@/components/StatCard";
-import CompetativeSection from "@/components/CompetativeSection";
 
 export default function HomeScreen() {
   const hasGoogleConnection = null;
@@ -29,7 +27,6 @@ export default function HomeScreen() {
 
   return (
     <View style={{ flex: 1 }}>
-      <DashboardHeader />
       <ScrollView style={styles.container}>
         {hasGoogleConnection ? (
           <>
@@ -37,7 +34,6 @@ export default function HomeScreen() {
             <StatSection cardData={cardDataSample} />
           </>
         ) : null}
-        <CompetativeSection />
       </ScrollView>
     </View>
   );

@@ -49,11 +49,11 @@ const InitialLayout = () => {
   }, [isLoaded]);
 
   useEffect(() => {
-    if (!isLoaded) {
-      return;
-    }
+    if (!isLoaded) return;
+
     const inTabsGroup = segments[0] === "(tabs)";
-    const inTeamRoute = segments[0] === "team";
+    const inProGroup = segments[0] === "(pro)";
+    const inProfile = segments[0] === "profile";
     const inAuthScreens =
       segments[0] === "signin" ||
       segments[0] === "signup" ||
@@ -65,12 +65,12 @@ const InitialLayout = () => {
         return;
       }
 
-      if (!inTabsGroup && !inTeamRoute) {
+      if (!inTabsGroup && !inProGroup && !inProfile) {
         router.replace("/(tabs)");
         return;
       }
     } else {
-      if (inTabsGroup) {
+      if (inTabsGroup || inProGroup) {
         router.replace("/(auth)/signin");
       }
     }
@@ -88,10 +88,10 @@ const InitialLayout = () => {
   return (
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="(tabs)" />
+      <Stack.Screen name="(pro)" />
       <Stack.Screen name="(auth)/signin" />
       <Stack.Screen name="(auth)/signup" />
       <Stack.Screen name="(auth)/forgot-password" />
-      <Stack.Screen name="team" />
     </Stack>
   );
 };
@@ -110,7 +110,9 @@ export default function RootLayout() {
       }}
     >
       <SafeAreaProvider>
-        <InitialLayout />
+        <SafeAreaView style={{ flex: 1 }}>
+          <InitialLayout />
+        </SafeAreaView>
       </SafeAreaProvider>
     </ClerkProvider>
   );

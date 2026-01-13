@@ -20,10 +20,10 @@ import {
   Hash,
   Calendar,
   Clock,
-  Lock,
   XCircle,
+  ArrowLeft,
 } from "lucide-react-native";
-import SignOutButton from "../../components/SignOutButton";
+import SignOutButton from "../components/SignOutButton";
 
 export default function ProfileScreen() {
   const { user } = useUser();
@@ -48,7 +48,16 @@ export default function ProfileScreen() {
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={styles.gradientHeader}
-          />
+          >
+            <TouchableOpacity
+              onPress={() => router.replace("/(tabs)")}
+              style={styles.backButtonContainer}
+            >
+              <View style={styles.blurWrapper}>
+                <ArrowLeft color="white" size={26} />
+              </View>
+            </TouchableOpacity>
+          </LinearGradient>
         </View>
 
         <View style={styles.mainContent}>
@@ -188,6 +197,19 @@ const InfoRow = ({
 );
 
 const styles = StyleSheet.create({
+  backButtonContainer: {
+    position: "absolute",
+    top: 20,
+    left: 20,
+    borderRadius: 999,
+    overflow: "hidden",
+    backgroundColor: "rgba(255, 255, 255, 0.2)",
+  },
+  blurWrapper: {
+    padding: 12,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   container: { flex: 1, backgroundColor: "#f9fafb" },
   scrollContent: { paddingBottom: 40 },
   headerContainer: { height: 160 },

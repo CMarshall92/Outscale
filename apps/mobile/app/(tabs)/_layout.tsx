@@ -1,40 +1,53 @@
 import React from "react";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { Tabs } from "expo-router";
-import { SafeAreaView } from "react-native-safe-area-context";
-
-// You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
-function TabBarIcon(props: {
-  name: React.ComponentProps<typeof FontAwesome>["name"];
-  color: string;
-}) {
-  return <FontAwesome size={28} style={{ marginBottom: -3 }} {...props} />;
-}
+import { Tabs, useRouter } from "expo-router";
+import { BadgeCheck, Flame } from "lucide-react-native";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import DashboardHeader from "@/components/DashboardHeader";
 
 export default function TabLayout() {
+  const router = useRouter();
+
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <Tabs
-        screenOptions={{
-          tabBarActiveTintColor: "#007AFF",
-          headerShown: false,
+    <Tabs
+      screenOptions={{
+        tabBarActiveTintColor: "#007AFF",
+        headerShown: true,
+        header: () => <DashboardHeader />,
+      }}
+    >
+      <Tabs.Screen
+        name="index"
+        options={{
+          title: "Dashboard",
+          tabBarIcon: ({ color }) => (
+            <MaterialCommunityIcons
+              name="view-dashboard-outline"
+              size={22}
+              color={color}
+            />
+          ),
         }}
-      >
-        <Tabs.Screen
-          name="index"
-          options={{
-            title: "Home",
-            tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
-          }}
-        />
-        <Tabs.Screen
-          name="profile"
-          options={{
-            title: "Profile",
-            tabBarIcon: ({ color }) => <TabBarIcon name="user" color={color} />,
-          }}
-        />
-      </Tabs>
-    </SafeAreaView>
+      />
+      <Tabs.Screen
+        name="team"
+        options={{
+          title: "Competition",
+          tabBarIcon: ({ color }) => <Flame size={22} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="members"
+        listeners={() => ({
+          tabPress: (e) => {
+            e.preventDefault();
+            router.push("/(pro)/letsCook");
+          },
+        })}
+        options={{
+          title: "Members",
+          tabBarIcon: ({ color }) => <BadgeCheck size={22} color={color} />,
+        }}
+      />
+    </Tabs>
   );
 }
