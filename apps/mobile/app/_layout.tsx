@@ -1,10 +1,12 @@
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 import { ClerkProvider, useAuth } from "@clerk/clerk-expo";
 import { Stack, useRouter, useSegments } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import * as SplashScreen from "expo-splash-screen";
 import { ActivityIndicator, View, Text } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import { useFonts } from "expo-font";
+import { redirectionHandler } from "@/lib/redirects";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -41,44 +43,29 @@ const InitialLayout = () => {
   const { isLoaded, isSignedIn } = useAuth();
   const segments = useSegments();
   const router = useRouter();
+  const [fontsLoaded, fontError] = useFonts({
+    MontserratSemi: require("../assets/fonts/Montserrat-SemiBold.ttf"),
+    MontserratReg: require("../assets/fonts/Montserrat-Regular.ttf"),
+  });
 
-  useEffect(() => {
-    if (isLoaded) {
-      SplashScreen.hideAsync();
+  const onLayoutRootView = useCallback(async () => {
+    if ((isLoaded && fontsLoaded) || fontError) {
+      await SplashScreen.hideAsync();
     }
-  }, [isLoaded]);
+  }, [isLoaded, fontsLoaded, fontError]);
 
-  useEffect(() => {
-    if (!isLoaded) return;
-
-    const inTabsGroup = segments[0] === "(tabs)";
-    const inProGroup = segments[0] === "(pro)";
-    const inProfile = segments[0] === "profile";
-    const inAuthScreens =
-      segments[0] === "signin" ||
-      segments[0] === "signup" ||
-      segments[0] === "forgot-password";
-
-    if (isSignedIn) {
-      if (inAuthScreens) {
-        router.replace("/(tabs)");
-        return;
-      }
-
-      if (!inTabsGroup && !inProGroup && !inProfile) {
-        router.replace("/(tabs)");
-        return;
-      }
-    } else {
-      if (inTabsGroup || inProGroup) {
-        router.replace("/(auth)/signin");
-      }
-    }
-  }, [isLoaded, isSignedIn, segments, router]);
+  useEffect(
+    () =>
+      redirectionHandler(isLoaded, isSignedIn, segments, router, fontsLoaded),
+    [isLoaded, isSignedIn, segments, router, fontsLoaded]
+  );
 
   if (!isLoaded) {
     return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+      <View
+        onLayout={onLayoutRootView}
+        style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+      >
         <ActivityIndicator size="large" />
         <Text style={{ marginTop: 10 }}>Loading...</Text>
       </View>

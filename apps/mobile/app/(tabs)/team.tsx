@@ -1,21 +1,28 @@
-import React from "react";
-import { StyleSheet, View } from "react-native";
-import { useLocalSearchParams } from "expo-router";
-import CompetativeSection from "@/components/CompetativeSection";
+import React, { useEffect, useState } from "react";
+import { Text } from "react-native";
+import CompetativeSetup from "@/components/CompetativeSetup";
+import { useUser } from "@clerk/clerk-expo";
+import { fetchTeamByUserId } from "@/networking/teams";
+import { Team } from "@/types/team";
 
 export default function TeamPage() {
-  const { team } = useLocalSearchParams();
-  console.log("Team params:", team);
+  const { user } = useUser();
+  const [team, setTeam] = useState<Team | null>(null);
+
+  useEffect(() => {
+    const fetchTeam = async () => setTeam(await fetchTeamByUserId(user?.id));
+    fetchTeam();
+  }, []);
 
   return (
-    <View style={styles.container}>
-      <CompetativeSection />
-    </View>
+    <>
+      <CompetativeSetup teamData={team} />
+    </>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//   },
+// });

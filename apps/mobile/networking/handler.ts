@@ -12,7 +12,7 @@ const handler = async (
         "Content-Type": "application/json",
         ...options?.headers ? options.headers : {}
       },
-      body: JSON.stringify(body || {}),
+      ...requestType !== "GET" ? { body: JSON.stringify(body || {}) } : {},
       ...options ? options : {}
     });
 

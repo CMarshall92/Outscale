@@ -1,6 +1,6 @@
 import React from "react";
 import { Tabs, useRouter } from "expo-router";
-import { BadgeCheck, Flame } from "lucide-react-native";
+import { BadgeCheck, Bike, Flame } from "lucide-react-native";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import DashboardHeader from "@/components/DashboardHeader";
 
@@ -19,6 +19,7 @@ export default function TabLayout() {
         name="index"
         options={{
           title: "Dashboard",
+          headerShown: false,
           tabBarIcon: ({ color }) => (
             <MaterialCommunityIcons
               name="view-dashboard-outline"
@@ -33,6 +34,13 @@ export default function TabLayout() {
         options={{
           title: "Competition",
           tabBarIcon: ({ color }) => <Flame size={22} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="challenges"
+        options={{
+          title: "Challenges",
+          tabBarIcon: ({ color }) => <Bike size={22} color={color} />,
         }}
       />
       <Tabs.Screen

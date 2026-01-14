@@ -142,13 +142,21 @@ const JoinForm = ({
   user: { id: string | undefined } | null | undefined;
   setOption: Dispatch<SetStateAction<string>>;
 }) => {
-  const Form = () => (
-    <View>
-      <OTPInput length={6} code={""} setCode={() => {}} />
-      <Button title="Join Team" onSignUpPress={() => {}} />
-      <Button title="Back" onPress={() => setOption(OPTION_SELECTED.NONE)} />
-    </View>
-  );
+  const Form = () => {
+    const [code, setCode] = React.useState("");
+
+    const handleJoinTeam = () => {
+      // Implement join team logic here
+    };
+
+    return (
+      <View>
+        <OTPInput length={6} code={code} setCode={setCode} />
+        <Button title="Join Team" onSignUpPress={handleJoinTeam} />
+        <Button title="Back" onPress={() => setOption(OPTION_SELECTED.NONE)} />
+      </View>
+    );
+  };
 
   return (
     <>
@@ -157,13 +165,14 @@ const JoinForm = ({
           <Merge size={24} color="white" />
         </View>
         <View>
-          <Text style={styles.title}>Team Fitness Competition</Text>
+          <Text style={styles.title}>Join An Existing Team</Text>
           <Text style={styles.subtitle}>Its better training together</Text>
         </View>
       </View>
       <Text style={styles.description}>
-        Join or create a team to track progress of your friends, compete with
-        friends, and achieve your fitness goals together.
+        Ask your group for the team code and enter it below to join, they can
+        find it on the competition page if they have already created a team in
+        the header area.
       </Text>
       <Form />
     </>
@@ -172,7 +181,7 @@ const JoinForm = ({
 
 const NoTeamView = () => {
   const { user } = useUser();
-  const [option, setOption] = React.useState(OPTION_SELECTED.CREATE_TEAM);
+  const [option, setOption] = React.useState(OPTION_SELECTED.NONE);
 
   return (
     <View style={styles.outerContainer}>
@@ -228,7 +237,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "rgba(255, 255, 255, 0.9)",
     lineHeight: 20,
-    marginBottom: 5,
+    marginBottom: 15,
   },
   buttonContainer: {
     gap: 12,

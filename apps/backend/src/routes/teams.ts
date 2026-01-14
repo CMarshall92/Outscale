@@ -30,10 +30,20 @@ export async function teams(fastify: FastifyInstance) {
         .send({ error: 'userId is required' });
     }
 
+    const userJoinedTeams = await prisma.team.findMany({
+      where: {
+        users: {
+          some: {
+            clerkId: userId,
+          },
+        },
+      },
+    });
+
     return { 
       message: 'success', 
       ok: true,
-      data: [], 
+      data: userJoinedTeams?.[0] || null, 
     };
   });
 

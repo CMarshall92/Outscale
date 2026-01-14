@@ -10,6 +10,25 @@ export interface StatCardProps {
   slug?: string;
 }
 
+const cardDataSample: StatCardProps[] = [
+  {
+    label: "Calories",
+    value: "847",
+    trend: "+12% vs yesterday",
+    icon: Flame,
+    iconColor: "#F97316",
+    slug: "calories",
+  },
+  {
+    label: "Steps",
+    value: "8.2k",
+    trend: "+8% vs yesterday",
+    icon: Activity,
+    iconColor: "#3B82F6",
+    slug: "steps",
+  },
+];
+
 const StatCard = ({
   label,
   value,

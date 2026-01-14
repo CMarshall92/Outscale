@@ -2,10 +2,12 @@ import React from "react";
 import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
 import { Users, Trophy, TrendingUp, ChevronRight } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
+import { Team } from "@/types/team";
 
-const TeamView = () => {
+const TeamView = ({ team }: { team: Team }) => {
   const teamData = {
-    name: "Fitness Warriors",
+    name: team.name,
+    description: team.description,
     members: 12,
     rank: 3,
     weeklyPoints: 2847,
@@ -38,8 +40,8 @@ const TeamView = () => {
               />
             </View>
             <View>
-              <Text style={styles.title}>My Team</Text>
-              <Text style={styles.teamName}>{teamData.name}</Text>
+              <Text style={styles.title}>{teamData.name}</Text>
+              <Text style={styles.teamName}>{teamData.description}</Text>
             </View>
           </View>
           <View style={styles.iconCircle}>

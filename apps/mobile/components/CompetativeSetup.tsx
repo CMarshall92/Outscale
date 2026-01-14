@@ -1,21 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { View, StyleSheet } from "react-native";
 import TeamView from "./TeamView";
 import NoTeamView from "./NoTeamView";
 
-const CompetativeSection = () => {
-  const [hasTeam, setHasTeam] = useState(false);
-
-  useEffect(() => {
-    // Fetch team status from API or local storage
-  }, []);
-
-  return (
-    <View style={styles.container}>
-      {hasTeam ? <TeamView /> : <NoTeamView />}
-    </View>
-  );
-};
+const CompetativeSetup = ({ teamData }: { teamData: any }) => (
+  <View style={styles.container}>
+    {teamData ? <TeamView team={teamData} /> : <NoTeamView />}
+  </View>
+);
 
 const styles = StyleSheet.create({
   container: {
@@ -40,4 +32,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CompetativeSection;
+export default CompetativeSetup;
