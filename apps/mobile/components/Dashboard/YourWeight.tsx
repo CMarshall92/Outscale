@@ -1,7 +1,7 @@
 import { View, StyleSheet, Dimensions, Text } from "react-native";
 
 const getMockData = () => {
-  const mockCount = 6;
+  const mockCount = 20;
   const startingWeight = 105;
 
   const results = Array.from({ length: mockCount }, (_, i) => ({
@@ -35,13 +35,13 @@ export const YourWeight = () => {
     let weight = 0;
     let label = "";
     let isReal = false;
-    let loss = -Infinity; // Loss compared to previous week
+    let percentChange = 0;
 
     if (weekNum === 0) {
       weight = startingWeight;
       label = "Week 0";
       isReal = true;
-      // No loss calculation for Week 0 (start)
+      percentChange = 0;
     } else if (weekNum > 0) {
       const resultIndex = weekNum - 1;
       if (resultIndex < results.length) {
@@ -49,15 +49,16 @@ export const YourWeight = () => {
         label = `Week ${weekNum}`;
         isReal = true;
 
-        // Calculate Loss
         let prevWeight = 0;
         if (weekNum === 1) {
           prevWeight = startingWeight;
         } else {
-          // prev is weekNum - 1 => resultIndex - 1
           prevWeight = results[resultIndex - 1].weight;
         }
-        loss = prevWeight - weight;
+
+        if (prevWeight > 0) {
+          percentChange = ((weight - prevWeight) / prevWeight) * 100;
+        }
       }
     } else {
       // Negative weeks (placeholders for new users with little data)
@@ -65,18 +66,19 @@ export const YourWeight = () => {
       label = ""; // Empty label for non-existent weeks
     }
 
-    return { weekNum, weight, label, isReal, loss };
+    return { weekNum, weight, label, isReal, percentChange };
   });
 
-  // Find best weight loss in the VISIBLE data to highlight
-  // User: "the yellow active one should allways be on the best weiggh in ie the one with the largest weigh lost number"
-  let maxLoss = -Infinity;
+  // Find best weight loss (largest percentage decrease) in the VISIBLE data to highlight
+  // Decrease is negative percentChange, so we look for the minimum algebraic value.
+  let minPercentChange = Infinity;
   let bestIndex = -1;
 
   data.forEach((item, index) => {
     if (item.isReal && item.weekNum > 0) {
-      if (item.loss > maxLoss) {
-        maxLoss = item.loss;
+      // Compare percentChange
+      if (item.percentChange < minPercentChange) {
+        minPercentChange = item.percentChange;
         bestIndex = index;
       }
     }
@@ -118,17 +120,27 @@ export const YourWeight = () => {
           const isActive = index === bestIndex;
           const barHeightPercentage = getBarHeight(item.weight);
 
+          let displayLabel = "Start";
+          if (item.weekNum !== 0 && item.isReal) {
+            const sign = item.percentChange > 0 ? "+" : "";
+            displayLabel = `${sign}${item.percentChange.toFixed(1)}%`;
+          }
+
           return (
             <View key={index} style={styles.columnWrapper}>
               {/* Only show label if there is weight */}
-              <Text
-                style={[
-                  styles.barLabel,
-                  { opacity: item.weight > 0 ? 0.8 : 0 },
-                ]}
+              <View
+                style={{
+                  opacity: item.weight > 0 ? 0.8 : 0,
+                  alignItems: "center",
+                  marginBottom: 4,
+                }}
               >
-                {item.weight > 0 ? item.weight : "0"}
-              </Text>
+                <Text style={styles.barLabelWeight}>
+                  {item.weight > 0 ? item.weight : ""}
+                </Text>
+                <Text style={styles.barLabelPercent}>{displayLabel}</Text>
+              </View>
 
               <View style={styles.barTrack}>
                 <View
@@ -199,10 +211,14 @@ const styles = StyleSheet.create({
     width: 50,
     minHeight: 10,
   },
-  barLabel: {
+  barLabelWeight: {
     color: "#D1D1D6",
     fontSize: 14,
-    marginBottom: 4,
+    fontWeight: "bold",
+  },
+  barLabelPercent: {
+    color: "#D1D1D6",
+    fontSize: 10,
   },
   dateLabel: {
     color: "#D1D1D6",

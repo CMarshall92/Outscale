@@ -35,6 +35,8 @@ export default function LoginScreen() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [code, setCode] = useState("");
+  const [pending2FA, setPending2FA] = useState(false);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -53,6 +55,19 @@ export default function LoginScreen() {
       if (signInAttempt.status === "complete") {
         await setActive({ session: signInAttempt.createdSessionId });
         router.replace("/(tabs)");
+      } else if (signInAttempt.status === "needs_second_factor") {
+        console.log(signInAttempt);
+        const emailFactor = signInAttempt?.supportedSecondFactors?.find(
+          (factor) => factor.strategy === "email_code"
+        ) as any;
+
+        if (emailFactor) {
+          await signIn.prepareSecondFactor({
+            strategy: "email_code",
+            emailAddressId: emailFactor.emailAddressId,
+          });
+          setPending2FA(true);
+        }
       } else {
         setError("Sign-in incomplete. Please try again.");
         console.error(JSON.stringify(signInAttempt, null, 2));
@@ -73,6 +88,34 @@ export default function LoginScreen() {
     }
   };
 
+  const onVerifyPress = async () => {
+    if (!isLoaded) return;
+    setIsLoading(true);
+    setError("");
+
+    try {
+      const completeSignIn = await signIn.attemptSecondFactor({
+        strategy: "email_code",
+        code,
+      });
+
+      if (completeSignIn.status === "complete") {
+        await setActive({ session: completeSignIn.createdSessionId });
+        router.replace("/(tabs)");
+      } else {
+        console.error(JSON.stringify(completeSignIn, null, 2));
+        setError("Verification failed. Please try again.");
+      }
+    } catch (err: any) {
+      console.error(JSON.stringify(err, null, 2));
+      const errorMessage =
+        err.errors?.[0]?.longMessage || err.message || "Verification failed";
+      setError(errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const onSSOPress = React.useCallback(
     async (strategy: "oauth_google" | "oauth_apple" | "oauth_facebook") => {
       try {
@@ -85,8 +128,6 @@ export default function LoginScreen() {
             }),
           });
 
-        console.log("SSO Flow Result:", { createdSessionId });
-
         if (createdSessionId) {
           await setActive?.({ session: createdSessionId });
         } else {
@@ -98,6 +139,78 @@ export default function LoginScreen() {
     },
     [startSSOFlow]
   );
+
+  if (pending2FA) {
+    return (
+      <View style={styles.container}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={{ flex: 1 }}
+        >
+          <ScrollView contentContainerStyle={styles.scrollContainer}>
+            <View style={styles.logoContainer}>
+              <View style={styles.logoBox}>
+                <Svg width={32} height={32} viewBox="0 0 24 24" fill="#1a1a1a">
+                  <Path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z" />
+                </Svg>
+              </View>
+            </View>
+
+            <Text style={styles.title}>Verification</Text>
+            <Text style={{ color: "white", marginBottom: 20 }}>
+              Enter the code sent to your email address below
+            </Text>
+
+            <View style={styles.inputWrapper}>
+              <View style={styles.iconContainer}>
+                <Svg
+                  width={16}
+                  height={16}
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#fff"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <Path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4" />
+                </Svg>
+              </View>
+              <TextInput
+                style={styles.input}
+                placeholder="Code"
+                placeholderTextColor="#fff"
+                value={code}
+                onChangeText={setCode}
+                keyboardType="numeric"
+              />
+            </View>
+
+            {error ? <Text style={{ color: "red" }}>{error}</Text> : null}
+
+            <TouchableOpacity
+              style={styles.submitButton}
+              onPress={onVerifyPress}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.submitButtonText}>
+                {isLoading ? "Verifying..." : "Verify"}
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => setPending2FA(false)}
+              style={{ marginTop: 20 }}
+            >
+              <Text style={[styles.linkText, { textAlign: "center" }]}>
+                Back to Login
+              </Text>
+            </TouchableOpacity>
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -325,6 +438,7 @@ const styles = StyleSheet.create({
     borderColor: "#6b7280",
     borderWidth: 1,
     borderRadius: 12,
+    width: "100%",
   },
   iconContainer: {
     position: "absolute",

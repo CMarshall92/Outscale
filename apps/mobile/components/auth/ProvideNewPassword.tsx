@@ -43,7 +43,7 @@ export const ProvideNewPassword = ({ emailAddress }: any) => {
 
       if (status === "complete") {
         await setActive({ session: createdSessionId });
-        router.replace("/(tabs)");
+        router.replace("/(auth)/signin");
       }
     } catch (err: any) {
       setError(err.errors[0].message);

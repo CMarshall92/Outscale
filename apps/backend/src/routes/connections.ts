@@ -4,48 +4,32 @@ import { google } from 'googleapis';
 
 interface IConnectGoogle {
   userId: string;
-  serverAuthCode: string;
+  refreshToken: string;
 }
 
 export async function connections(fastify: FastifyInstance) {
   fastify.post<{ Body: IConnectGoogle }>('/google/connect', async (request, reply) => {
-    const { serverAuthCode, userId } = request.body;
-
-    const oauth2Client = new google.auth.OAuth2(
-      process.env.GOOGLE_CLIENT_ID,
-      process.env.GOOGLE_CLIENT_SECRET,
-      'postmessage' // Special redirect URI for server-side exchange
-    );
+    const { refreshToken, userId } = request.body;
 
     try {
-      const { tokens } = await oauth2Client.getToken(serverAuthCode);
-      
-      if (tokens.refresh_token) {
-        await prisma.user.upsert({
+      if (refreshToken) {
+        await prisma.user.update({
           where: { clerkId: userId },
-          update: {
+          data: {
             connections: {
               create: {
                 provider: 'oauth_google',
-                refreshToken: tokens.refresh_token,
-              },
-            },
-          },
-          create: {
-            clerkId: userId,
-            connections: {
-              create: {
-                provider: 'oauth_google',
-                refreshToken: tokens.refresh_token,
+                refreshToken: refreshToken,
               },
             },
           },
         });
 
         console.log('Saved refresh token for user:', userId);
+        return { success: true };
       }
 
-      return { success: true };
+      return reply.code(400).send({ error: 'No refresh token provided' });
     } catch (err) {
       console.error('Token exchange failed', err);
       return reply.code(500).send({ error: 'Failed to exchange token' });

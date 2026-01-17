@@ -10,7 +10,8 @@ export default function TeamPage() {
   const [team, setTeam] = useState<Team | null>(null);
 
   useEffect(() => {
-    const fetchTeam = async () => setTeam(await fetchTeamByUserId(user?.id));
+    const fetchTeam = async () =>
+      setTeam((await fetchTeamByUserId(user?.id))?.[0] || null);
     fetchTeam();
   }, []);
 

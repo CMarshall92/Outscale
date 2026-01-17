@@ -43,7 +43,7 @@ export async function teams(fastify: FastifyInstance) {
     return { 
       message: 'success', 
       ok: true,
-      data: userJoinedTeams?.[0] || null, 
+      data: userJoinedTeams || null, 
     };
   });
 

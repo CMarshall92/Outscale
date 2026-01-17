@@ -4,8 +4,8 @@ export const YourStats = () => {
   return (
     <View style={styles.section}>
       <View>
-        <Text style={styles.sectionHeading}>Your</Text>
-        <Text style={styles.sectionHeading}>Statistics</Text>
+        <Text style={styles.sectionHeading}>Your Daily</Text>
+        <Text style={styles.sectionSubHeading}>Statistics</Text>
       </View>
       <View style={styles.headlineContainer}>
         <View style={styles.headline}>
@@ -36,15 +36,22 @@ const styles = StyleSheet.create({
   sectionHeading: {
     fontFamily: "MontserratSemi",
     color: "#676767",
-    fontSize: 60,
+    fontSize: 55,
     fontWeight: "bold",
     lineHeight: 60,
+  },
+  sectionSubHeading: {
+    fontFamily: "MontserratSemi",
+    color: "#676767",
+    fontSize: 45,
+    fontWeight: "bold",
+    lineHeight: 40,
   },
   headlineContainer: {
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 20,
+    marginTop: 35,
   },
   headline: {
     alignContent: "center",
