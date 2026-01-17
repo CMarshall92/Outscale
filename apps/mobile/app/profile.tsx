@@ -26,89 +26,12 @@ import {
 } from "lucide-react-native";
 import SignOutButton from "../components/SignOutButton";
 import * as WebBrowser from "expo-web-browser";
-import * as Google from "expo-auth-session/providers/google";
-import {
-  Prompt,
-  ResponseType,
-  makeRedirectUri,
-  exchangeCodeAsync,
-} from "expo-auth-session";
-import { connectGoogle } from "../networking/connections";
 
 WebBrowser.maybeCompleteAuthSession();
 
 export default function ProfileScreen() {
   const { user } = useUser();
   const router = useRouter();
-
-  const [request, response, promptAsync] = Google.useAuthRequest({
-    androidClientId: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID,
-    iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
-    webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
-    responseType: ResponseType.Code,
-    extraParams: {
-      access_type: "offline",
-    },
-    prompt: Prompt.Consent,
-    scopes: [
-      "https://www.googleapis.com/auth/fitness.activity.read",
-      "https://www.googleapis.com/auth/fitness.body.read",
-    ],
-    // For native Google flow, we must use the package name scheme
-    redirectUri: makeRedirectUri({
-      scheme: "com.buhissopro1121.outscale",
-      path: "oauth2redirect",
-    }),
-  });
-
-  React.useEffect(() => {
-    if (response?.type === "success") {
-      const { code } = response.params;
-
-      const clientId =
-        Platform.OS === "android"
-          ? process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID
-          : Platform.OS === "ios"
-            ? process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID
-            : process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID;
-
-      if (user?.id && code && request?.codeVerifier) {
-        exchangeCodeAsync(
-          {
-            code,
-            clientId: clientId!,
-            // Must match the redirectUri used in the request exactly
-            redirectUri: makeRedirectUri({
-              scheme: "com.buhissopro1121.outscale",
-              path: "oauth2redirect",
-            }),
-            extraParams: {
-              code_verifier: request.codeVerifier,
-            },
-          },
-          Google.discovery
-        )
-          .then((res) => {
-            if (res.refreshToken) {
-              connectGoogle(user.id, res.refreshToken)
-                .then(() => alert("Google Fit Connected!"))
-                .catch((err) => {
-                  console.error(err);
-                  alert("Failed to save connection");
-                });
-            } else {
-              alert(
-                "No refresh token received. Please try again with consent."
-              );
-            }
-          })
-          .catch((err) => {
-            console.error("Exchange failed", err);
-            alert("Failed to exchange token");
-          });
-      }
-    }
-  }, [response, user, request]);
 
   const formatDate = (dateString: string | null | undefined) => {
     if (!dateString) return "Not available";
@@ -244,7 +167,7 @@ export default function ProfileScreen() {
 
           <View style={styles.card}>
             <Text style={styles.cardTitle}>Integrations</Text>
-            <View style={styles.gap4}>
+            {/* <View style={styles.gap4}>
               <TouchableOpacity
                 disabled={!request}
                 onPress={() => promptAsync()}
@@ -258,7 +181,7 @@ export default function ProfileScreen() {
                   <Text style={styles.value}>Connect</Text>
                 </View>
               </TouchableOpacity>
-            </View>
+            </View> */}
           </View>
 
           <View style={[styles.card, styles.lastCard]}>

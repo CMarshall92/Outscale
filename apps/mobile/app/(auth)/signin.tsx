@@ -15,6 +15,7 @@ import {
 import Svg, { Path } from "react-native-svg";
 import * as WebBrowser from "expo-web-browser";
 import * as AuthSession from "expo-auth-session";
+import OTPInput from "@/components/OTPInput";
 
 const useWarmUpBrowser = () => {
   useEffect(() => {
@@ -39,6 +40,7 @@ export default function LoginScreen() {
   const [pending2FA, setPending2FA] = useState(false);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [MFACode, setMFACode] = useState("");
 
   const onSignInPress = async () => {
     if (!isLoaded) return;
@@ -52,11 +54,12 @@ export default function LoginScreen() {
         password,
       });
 
+      console.log(signInAttempt);
+
       if (signInAttempt.status === "complete") {
         await setActive({ session: signInAttempt.createdSessionId });
         router.replace("/(tabs)");
       } else if (signInAttempt.status === "needs_second_factor") {
-        console.log(signInAttempt);
         const emailFactor = signInAttempt?.supportedSecondFactors?.find(
           (factor) => factor.strategy === "email_code"
         ) as any;
@@ -96,7 +99,7 @@ export default function LoginScreen() {
     try {
       const completeSignIn = await signIn.attemptSecondFactor({
         strategy: "email_code",
-        code,
+        code: MFACode,
       });
 
       if (completeSignIn.status === "complete") {
@@ -161,30 +164,7 @@ export default function LoginScreen() {
               Enter the code sent to your email address below
             </Text>
 
-            <View style={styles.inputWrapper}>
-              <View style={styles.iconContainer}>
-                <Svg
-                  width={16}
-                  height={16}
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="#fff"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <Path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4" />
-                </Svg>
-              </View>
-              <TextInput
-                style={styles.input}
-                placeholder="Code"
-                placeholderTextColor="#fff"
-                value={code}
-                onChangeText={setCode}
-                keyboardType="numeric"
-              />
-            </View>
+            <OTPInput code={MFACode} setCode={setMFACode} />
 
             {error ? <Text style={{ color: "red" }}>{error}</Text> : null}
 

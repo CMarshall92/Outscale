@@ -5,10 +5,7 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": [
-      "com.buhissopro1121.outscale",
-      "outscale"
-    ],
+    "scheme": "com.outscale.app",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "splash": {
@@ -18,7 +15,7 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.buhissopro1121.outscale"
+      "bundleIdentifier": "com.outscale.app"
     },
     "android": {
       "adaptiveIcon": {
@@ -30,7 +27,7 @@
         "android.permission.USE_BIOMETRIC",
         "android.permission.USE_FINGERPRINT"
       ],
-      "package": "com.buhissopro1121.outscale"
+      "package": "com.outscale.app"
     },
     "web": {
       "bundler": "metro",
